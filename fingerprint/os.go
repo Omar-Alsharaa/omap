@@ -56,7 +56,7 @@ func NewOSDetector(timeout time.Duration) *OSDetector {
 }
 
 // DetectOS attempts to detect the operating system using multiple methods
-func (d *OSDetector) DetectOS(host string, scanResults []interface{}) OSFingerprint {
+func (d *OSDetector) DetectOS(host string, scanResults interface{}) OSFingerprint {
 	// Convert scan results to banner map
 	banners := make(map[int]string)
 	

@@ -322,7 +322,7 @@ func (vs *VulnScanner) loadBuiltinSignatures() {
 		Category:    "XSS",
 		Method:      "GET",
 		Payload:     "<script>alert('XSS')</script>",
-		Matches:     []string{"<script>alert\('XSS'\)</script>"},
+		Matches:     []string{`<script>alert\('XSS'\)</script>`},
 		Remediation: "Implement proper input validation and output encoding",
 		References:  []string{"https://owasp.org/www-community/attacks/xss/"},
 	}
@@ -587,7 +587,7 @@ func (vs *VulnScanner) scanInjectionVulns(result *VulnScanResult, target string,
 
 // testSQLInjection tests for SQL injection vulnerabilities
 func (vs *VulnScanner) testSQLInjection(result *VulnScanResult, target string, config VulnScanConfig) {
-	payloads := []string{"'", "\"', "1' OR '1'='1", "1\" OR \"1\"=\"1", "'; DROP TABLE users; --"}
+	payloads := []string{"'", `"'`, "1' OR '1'='1", `1" OR "1"="1`, "'; DROP TABLE users; --"}
 
 	for _, payload := range payloads {
 		testURL := target + "?id=" + payload

@@ -27,6 +27,7 @@ type SubdomainResult struct {
 	IPs         []string  `json:"ips"`
 	CNAME       string    `json:"cname,omitempty"`
 	Source      string    `json:"source"`
+	Status      string    `json:"status"`
 	Timestamp   time.Time `json:"timestamp"`
 	ResponseTime time.Duration `json:"responseTime"`
 }

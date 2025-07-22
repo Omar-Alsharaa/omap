@@ -462,7 +462,7 @@ func (wtd *WebTechDetector) loadBuiltinSignatures() {
 		Category:    "Web Framework",
 		Description: "Microsoft ASP.NET Framework",
 		Website:     "https://dotnet.microsoft.com/apps/aspnet",
-		Headers:     map[string]string{"X-AspNet-Version": "", "X-Powered-By": "(?i)asp\.net"},
+		Headers:     map[string]string{"X-AspNet-Version": "", "X-Powered-By": `(?i)asp\.net`},
 		Cookies:     []string{"ASP.NET_SessionId"},
 		HTML:        []string{`__VIEWSTATE`, `__EVENTVALIDATION`},
 	}
