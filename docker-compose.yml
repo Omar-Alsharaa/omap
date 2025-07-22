@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  omap:
+    build: .
+    container_name: omap-scanner
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./results:/home/omap/results
+      - ./config:/home/omap/config
+    environment:
+      - OMAP_LOG_LEVEL=info
+      - OMAP_WEB_PORT=8080
+    networks:
+      - omap-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW  # Required for ICMP/TTL detection
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+
+  omap-web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: omap-web
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+    networks:
+      - omap-network
+    restart: unless-stopped
+    depends_on:
+      - omap
+
+networks:
+  omap-network:
+    driver: bridge
+
+volumes:
+  omap-results:
+  omap-config:
