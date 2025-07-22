@@ -360,13 +360,6 @@ func (ws *WebServer) runScan(req ScanRequest) {
 	ws.activeScan.Stats.TotalPorts = len(targets) * len(ports)
 	ws.scanMux.Unlock()
 
-	// Configure scanner
-	config := scanner.ScanConfig{
-		Workers:   req.Workers,
-		Timeout:   time.Duration(req.Timeout) * time.Millisecond,
-		RateLimit: time.Duration(req.RateLimit) * time.Millisecond,
-	}
-
 	// Load plugins if enabled
 	if req.EnablePlugins {
 		for _, pluginPath := range req.PluginPaths {
@@ -408,14 +401,16 @@ func (ws *WebServer) runScan(req ScanRequest) {
 
 			// OS Detection
 			if req.OSDetection && result.Status == "open" {
-				if osInfo := ws.osDetector.DetectOS(result.Host, result.Port, result.Banner); osInfo != nil {
-					scanResult.OSFingerprint = osInfo
+				osInfo := ws.osDetector.DetectOS(result.Host, []interface{}{result})
+				if osInfo.OS != "" {
+					scanResult.OSFingerprint = &osInfo
 				}
 			}
 
 			// Service Detection
 			if req.ServiceDetection && result.Banner != "" {
-				if svcInfo := ws.svcDetector.DetectService(result.Banner); svcInfo != nil {
+				svcInfo := ws.svcDetector.DetectService(result.Port, result.Banner)
+				if svcInfo.Service != "" {
 					scanResult.Service = svcInfo.Service
 					scanResult.Version = svcInfo.Version
 				}
@@ -429,7 +424,7 @@ func (ws *WebServer) runScan(req ScanRequest) {
 					Service: result.Service,
 					Banner:  result.Banner,
 				}
-				pluginResults := ws.pluginMgr.ExecutePlugins(context)
+				pluginResults := ws.pluginMgr.ExecutePluginsForTarget(context)
 				scanResult.PluginResults = pluginResults
 			}
 
@@ -460,7 +455,7 @@ func (ws *WebServer) runScan(req ScanRequest) {
 
 func (ws *WebServer) parsePorts(portStr string) ([]int, error) {
 	// Handle preset port lists
-	presets := network.GetCommonPorts()
+	presets := network.GetCommonPortSets()
 	if ports, exists := presets[portStr]; exists {
 		return ports, nil
 	}

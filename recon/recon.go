@@ -339,8 +339,24 @@ func (re *ReconEngine) RunReconnaissance(target string) (*ReconResult, error) {
 		if err != nil {
 			result.Errors = append(result.Errors, fmt.Sprintf("DNS analysis failed for %s: %v", domain, err))
 		} else {
-			result.DNSRecords[domain] = dnsResult.Records
-			result.Statistics.DNSRecordsFound += len(dnsResult.Records)
+			// Convert Records map to structured format
+			var records []struct {
+				Type  string `json:"type"`
+				Value string `json:"value"`
+			}
+			for recordType, values := range dnsResult.Records {
+				for _, value := range values {
+					records = append(records, struct {
+						Type  string `json:"type"`
+						Value string `json:"value"`
+					}{
+						Type:  recordType,
+						Value: value,
+					})
+				}
+			}
+			result.DNSRecords[domain] = records
+			result.Statistics.DNSRecordsFound += len(records)
 		}
 
 		// Analyze subdomains
@@ -357,8 +373,24 @@ func (re *ReconEngine) RunReconnaissance(target string) (*ReconResult, error) {
 				if err != nil {
 					result.Errors = append(result.Errors, fmt.Sprintf("DNS analysis failed for %s: %v", subdomain.Subdomain, err))
 				} else {
-					result.DNSRecords[subdomain.Subdomain] = dnsResult.Records
-					result.Statistics.DNSRecordsFound += len(dnsResult.Records)
+					// Convert Records map to structured format
+					var records []struct {
+						Type  string `json:"type"`
+						Value string `json:"value"`
+					}
+					for recordType, values := range dnsResult.Records {
+						for _, value := range values {
+							records = append(records, struct {
+								Type  string `json:"type"`
+								Value string `json:"value"`
+							}{
+								Type:  recordType,
+								Value: value,
+							})
+						}
+					}
+					result.DNSRecords[subdomain.Subdomain] = records
+					result.Statistics.DNSRecordsFound += len(records)
 				}
 			}
 		}
