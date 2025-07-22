@@ -1,10 +1,10 @@
 # OMAP - Advanced Network Scanner
 
-[![CI/CD Pipeline](https://github.com/yourusername/omap/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/yourusername/omap/actions)
-[![CodeQL](https://github.com/yourusername/omap/workflows/CodeQL/badge.svg)](https://github.com/yourusername/omap/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/yourusername/omap)](https://goreportcard.com/report/github.com/yourusername/omap)
+[![CI/CD Pipeline](https://github.com/Omar-Alsharaa/omap/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Omar-Alsharaa/omap/actions)
+[![CodeQL](https://github.com/Omar-Alsharaa/omap/workflows/CodeQL/badge.svg)](https://github.com/Omar-Alsharaa/omap/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Omar-Alsharaa/omap)](https://goreportcard.com/report/github.com/Omar-Alsharaa/omap)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Release](https://img.shields.io/github/release/yourusername/omap.svg)](https://github.com/yourusername/omap/releases)
+[![Release](https://img.shields.io/github/release/Omar-Alsharaa/omap.svg)](https://github.com/Omar-Alsharaa/omap/releases)
 
 > A comprehensive TCP port scanner inspired by Nmap, built in Go with advanced features and extensibility.
 
