@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 )
-	"time"
-)
 
 // SubdomainEnumerator handles subdomain discovery
 type SubdomainEnumerator struct {

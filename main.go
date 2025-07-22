@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -233,7 +232,7 @@ func scanTarget(target network.Target, ports []int, opts *ScanOptions,
 		for i := range result.Ports {
 			if result.Ports[i].Open && result.Ports[i].Banner != "" {
 				serviceFP := serviceDetector.DetectService(result.Ports[i].Port, result.Ports[i].Banner)
-				result.Ports[i].Service = serviceFP.Name
+				result.Ports[i].Service = serviceFP.Service
 				result.Ports[i].Version = serviceFP.Version
 			}
 		}
