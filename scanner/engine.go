@@ -17,6 +17,8 @@ type ScanResult struct {
 	Open    bool
 	Banner  string
 	Service string
+	Version string
+	Status  string
 	Latency time.Duration
 	Error   error
 }

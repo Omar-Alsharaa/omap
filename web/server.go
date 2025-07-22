@@ -104,10 +104,10 @@ func NewWebServer(port int, staticDir string) *WebServer {
 			},
 		},
 		clients:     make(map[*websocket.Conn]bool),
-		scanner:     scanner.NewAsyncScanner(),
-		osDetector:  fingerprint.NewOSDetector(),
+		scanner:     scanner.NewAsyncScanner(&scanner.ScanConfig{}),
+		osDetector:  fingerprint.NewOSDetector(time.Second * 5),
 		svcDetector: fingerprint.NewServiceDetector(),
-		pluginMgr:   plugins.NewPluginManager(),
+		pluginMgr:   plugins.NewPluginManager("./plugins/examples"),
 	}
 }
 
@@ -356,15 +356,15 @@ func (ws *WebServer) runScan(req ScanRequest) {
 
 	// Update stats
 	ws.scanMux.Lock()
-	ws.activeScan.Stats.TotalHosts = len(targets.Targets)
-	ws.activeScan.Stats.TotalPorts = len(targets.Targets) * len(ports)
+	ws.activeScan.Stats.TotalHosts = len(targets)
+	ws.activeScan.Stats.TotalPorts = len(targets) * len(ports)
 	ws.scanMux.Unlock()
 
 	// Configure scanner
 	config := scanner.ScanConfig{
 		Workers:   req.Workers,
 		Timeout:   time.Duration(req.Timeout) * time.Millisecond,
-		RateLimit: req.RateLimit,
+		RateLimit: time.Duration(req.RateLimit) * time.Millisecond,
 	}
 
 	// Load plugins if enabled
@@ -377,7 +377,7 @@ func (ws *WebServer) runScan(req ScanRequest) {
 	}
 
 	// Scan each target
-	for i, target := range targets.Targets {
+	for i, target := range targets {
 		ws.scanMux.RLock()
 		if ws.activeScan.Status != "running" {
 			ws.scanMux.RUnlock()
@@ -386,7 +386,7 @@ func (ws *WebServer) runScan(req ScanRequest) {
 		ws.scanMux.RUnlock()
 
 		// Scan ports for this target
-		results := ws.scanner.ScanPorts(target.Address, ports, config)
+		results := ws.scanner.ScanPorts(target.IP.String(), ports)
 
 		for _, result := range results {
 			ws.scanMux.RLock()

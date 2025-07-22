@@ -34,10 +34,13 @@ type SubdomainResult struct {
 
 // SubdomainConfig holds configuration for subdomain enumeration
 type SubdomainConfig struct {
-	Wordlists    []string      `json:"wordlists"`
-	Resolvers    []string      `json:"resolvers"`
-	Timeout      time.Duration `json:"timeout"`
-	Workers      int           `json:"workers"`
+	Sources       []string      `json:"sources"`
+	MaxSubdomains int           `json:"maxSubdomains"`
+	Threads       int           `json:"threads"`
+	Wordlists     []string      `json:"wordlists"`
+	Resolvers     []string      `json:"resolvers"`
+	Timeout       time.Duration `json:"timeout"`
+	Workers       int           `json:"workers"`
 	Bruteforce   bool          `json:"bruteforce"`
 	Passive      bool          `json:"passive"`
 	Recursive    bool          `json:"recursive"`

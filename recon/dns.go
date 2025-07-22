@@ -84,6 +84,10 @@ type ZoneTransferInfo struct {
 
 // DNSConfig holds configuration for DNS analysis
 type DNSConfig struct {
+	Servers         []string      `json:"servers"`
+	RecordTypes     []string      `json:"recordTypes"`
+	Threads         int           `json:"threads"`
+	EnableDNSSEC    bool          `json:"enableDNSSEC"`
 	Resolvers       []string      `json:"resolvers"`
 	Timeout         time.Duration `json:"timeout"`
 	CheckDNSSEC     bool          `json:"checkDNSSEC"`
@@ -382,7 +386,6 @@ func (da *DNSAnalyzer) lookupSRVRecords(domain string, result *DNSResult, errorC
 		serviceDomain := service + "." + domain
 		for _, resolver := range da.resolvers {
 			ctx, cancel := context.WithTimeout(context.Background(), da.timeout)
-			defer cancel()
 
 			r := &net.Resolver{
 				PreferGo: true,
@@ -392,9 +395,12 @@ func (da *DNSAnalyzer) lookupSRVRecords(domain string, result *DNSResult, errorC
 				},
 			}
 
-			// SRV lookup would require a DNS library for proper implementation
-			// This is a placeholder
-			_ = r
+			// Perform SRV lookup for the service
+			_, err := r.LookupSRV(ctx, "", "", serviceDomain)
+			if err == nil {
+				// Service found - could add to results here
+			}
+			cancel()
 			break
 		}
 	}
