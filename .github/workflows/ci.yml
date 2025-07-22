@@ -81,10 +81,13 @@ jobs:
       with:
         go-version: 1.21
     
-    - name: Run Gosec Security Scanner
-      uses: securecodewarrior/github-action-gosec@master
-      with:
-        gosec-version: 2.18.2
+    - name: Install dependencies
+      run: go mod download
+    
+    - name: Run security scanner
+      run: |
+        go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
+        gosec ./...
     
     - name: Run govulncheck
       run: |
