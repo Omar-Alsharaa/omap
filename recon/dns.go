@@ -21,6 +21,7 @@ type DNSAnalyzer struct {
 // DNSResult contains comprehensive DNS information
 type DNSResult struct {
 	Domain       string            `json:"domain"`
+	Records      map[string][]string `json:"records"`
 	ARecords     []string          `json:"aRecords"`
 	AAAARecords  []string          `json:"aaaaRecords"`
 	CNAME        string            `json:"cname,omitempty"`
@@ -396,8 +397,8 @@ func (da *DNSAnalyzer) lookupSRVRecords(domain string, result *DNSResult, errorC
 			}
 
 			// Perform SRV lookup for the service
-			_, err := r.LookupSRV(ctx, "", "", serviceDomain)
-			if err == nil {
+			_, addrs, err := r.LookupSRV(ctx, "", "", serviceDomain)
+			if err == nil && len(addrs) > 0 {
 				// Service found - could add to results here
 			}
 			cancel()

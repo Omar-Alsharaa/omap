@@ -252,12 +252,17 @@ func (wtd *WebTechDetector) DetectTechnologies(url string, config WebTechConfig)
 		result.Cookies = append(result.Cookies, CookieInfo{
 			Name:     cookie.Name,
 			Value:    cookie.Value,
+		})
+		cookieInfo := CookieInfo{
+			Name:     cookie.Name,
+			Value:    cookie.Value,
 			Domain:   cookie.Domain,
 			Path:     cookie.Path,
 			Secure:   cookie.Secure,
 			HttpOnly: cookie.HttpOnly,
-			SameSite: cookie.SameSite.String(),
-		})
+			SameSite: fmt.Sprintf("%v", cookie.SameSite),
+		}
+		result.Cookies = append(result.Cookies, cookieInfo)
 	}
 
 	// Read response body

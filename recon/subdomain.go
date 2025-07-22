@@ -282,6 +282,9 @@ func (se *SubdomainEnumerator) zoneTransferAttempt(domain string, subdomainChan 
 	ctx, cancel := context.WithTimeout(context.Background(), se.timeout)
 	defer cancel()
 
+	// Use context for future DNS operations
+	_ = ctx  // Currently not used but available for DNS operations
+	
 	nameservers, err := net.LookupNS(domain)
 	if err != nil {
 		return

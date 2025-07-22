@@ -197,8 +197,8 @@ func NewReconEngine(config ReconConfig) *ReconEngine {
 
 	if config.EnableSubdomainEnum {
 		subdomainConfig := SubdomainConfig{
-			Wordlists: config.SubdomainWordlists,
-			Sources:   config.SubdomainSources, config.SubdomainSources,
+			Wordlists:     config.SubdomainWordlists,
+			Sources:       config.SubdomainSources,
 			MaxSubdomains: config.MaxSubdomains,
 			Threads:       config.Threads,
 			Timeout:       config.Timeout,
@@ -215,6 +215,7 @@ func NewReconEngine(config ReconConfig) *ReconEngine {
 			EnableDNSSEC: config.EnableDNSSEC,
 		}
 		dnsAnalyzer = NewDNSAnalyzer(dnsConfig)
+		// Store dnsConfig for later use
 	}
 
 	if config.EnableWebTechDetection {
@@ -327,7 +328,14 @@ func (re *ReconEngine) RunReconnaissance(target string) (*ReconResult, error) {
 		}
 
 		// Analyze main domain
-		dnsResult, err := re.dnsAnalyzer.AnalyzeDomain(domain)
+		dnsConfig := DNSConfig{
+			Servers:      re.config.DNSServers,
+			RecordTypes:  re.config.DNSRecordTypes,
+			Timeout:      re.config.Timeout,
+			Threads:      re.config.Threads,
+			EnableDNSSEC: re.config.EnableDNSSEC,
+		}
+		dnsResult, err := re.dnsAnalyzer.AnalyzeDomain(domain, dnsConfig)
 		if err != nil {
 			result.Errors = append(result.Errors, fmt.Sprintf("DNS analysis failed for %s: %v", domain, err))
 		} else {
@@ -338,7 +346,14 @@ func (re *ReconEngine) RunReconnaissance(target string) (*ReconResult, error) {
 		// Analyze subdomains
 		for _, subdomain := range result.Subdomains {
 			if subdomain.Status == "active" {
-				dnsResult, err := re.dnsAnalyzer.AnalyzeDomain(subdomain.Subdomain)
+				dnsConfig := DNSConfig{
+					Servers:      re.config.DNSServers,
+					RecordTypes:  re.config.DNSRecordTypes,
+					Timeout:      re.config.Timeout,
+					Threads:      re.config.Threads,
+					EnableDNSSEC: re.config.EnableDNSSEC,
+				}
+				dnsResult, err := re.dnsAnalyzer.AnalyzeDomain(subdomain.Subdomain, dnsConfig)
 				if err != nil {
 					result.Errors = append(result.Errors, fmt.Sprintf("DNS analysis failed for %s: %v", subdomain.Subdomain, err))
 				} else {
