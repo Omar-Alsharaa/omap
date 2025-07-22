@@ -51,7 +51,7 @@ jobs:
       if: matrix.language == 'javascript'
       run: |
         cd web
-        npm ci
+        npm install --legacy-peer-deps
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

@@ -1,0 +1,10 @@
+github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvdEicI0Q6o8WI=
+github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
+github.com/gorilla/websocket v1.5.0 h1:PPwGk2LVqPU8dL19rXQkqqXQjEo9xKb0bFPB9lSRg0M=
+github.com/gorilla/websocket v1.5.0/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/rs/cors v1.10.1 h1:L0uuZVXIKlI1SShY2nhFUCQGC6+3FFOLd6DKgmA8YbQ=
+github.com/rs/cors v1.10.1/go.mod h1:XyqrcTp5RNXTYGSMnqEczNhUdKI6qWNdjqKpHqJHKJo=
+golang.org/x/net v0.17.0 h1:pVaXccu2ozPjCXewfr1S7xza/zcXTity9cCdXQYSjIM=
+golang.org/x/net v0.17.0/go.mod h1:NxSsAGuq816PNPmqtQdLE42eU2Fs7NoRIUA5p3VWjlE=
+yuin.jp/gopher-lua v1.1.0 h1:BojcDhfyDWgU2f2TOzYK/g5p2gxMrku8oupV0Phj1vL=
+yuin.jp/gopher-lua v1.1.0/go.mod h1:GBR0iDaNXjAgGg9zfCvksKo8BFAL9mqdPWe8hYP68oE=
