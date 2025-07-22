@@ -113,7 +113,9 @@ func (s *AsyncScanner) ScanPort(host string, port int) ScanResult {
 func (s *AsyncScanner) grabBannerWithTimeout(conn net.Conn) string {
 	// Set deadline for banner grabbing
 	deadline := time.Now().Add(s.config.BannerTimeout)
-	conn.SetReadDeadline(deadline)
+	if err := conn.SetReadDeadline(deadline); err != nil {
+		return ""
+	}
 	
 	buffer := make([]byte, 1024)
 	n, err := conn.Read(buffer)

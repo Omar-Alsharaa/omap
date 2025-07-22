@@ -20,7 +20,6 @@ import {
   Security,
   NetworkCheck,
   CheckCircle,
-  Error,
   Speed
 } from '@mui/icons-material';
 import { useScan } from '../context/ScanContext';

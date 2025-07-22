@@ -3,6 +3,7 @@ package recon
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"sort"
 	"strings"
@@ -399,7 +400,8 @@ func (da *DNSAnalyzer) lookupSRVRecords(domain string, result *DNSResult, errorC
 			// Perform SRV lookup for the service
 			_, addrs, err := r.LookupSRV(ctx, "", "", serviceDomain)
 			if err == nil && len(addrs) > 0 {
-				// Service found - could add to results here
+				// Service found - SRV records detected for this domain
+				log.Printf("SRV records found for %s: %d records", serviceDomain, len(addrs))
 			}
 			cancel()
 			break

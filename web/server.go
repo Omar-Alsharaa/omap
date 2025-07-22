@@ -147,7 +147,17 @@ func (ws *WebServer) Start() error {
 		log.Printf("Serving static files from: %s", ws.staticDir)
 	}
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", ws.port), handler)
+	// Create server with timeouts for security
+	server := &http.Server{
+		Addr:           fmt.Sprintf(":%d", ws.port),
+		Handler:        handler,
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:   15 * time.Second,
+		IdleTimeout:    60 * time.Second,
+		MaxHeaderBytes: 1 << 20, // 1 MB
+	}
+
+	return server.ListenAndServe()
 }
 
 func (ws *WebServer) handleStartScan(w http.ResponseWriter, r *http.Request) {
@@ -235,7 +245,7 @@ func (ws *WebServer) handleListPlugins(w http.ResponseWriter, r *http.Request) {
 	plugins := make([]map[string]string, 0)
 
 	if _, err := os.Stat(pluginDir); err == nil {
-		filepath.Walk(pluginDir, func(path string, info os.FileInfo, err error) error {
+		if err := filepath.Walk(pluginDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return nil
 			}
@@ -246,7 +256,9 @@ func (ws *WebServer) handleListPlugins(w http.ResponseWriter, r *http.Request) {
 				})
 			}
 			return nil
-		})
+		}); err != nil {
+			log.Printf("Error walking plugin directory: %v", err)
+		}
 	}
 
 	ws.sendSuccess(w, plugins)
@@ -278,7 +290,11 @@ func (ws *WebServer) handleExport(w http.ResponseWriter, r *http.Request) {
 	case "json":
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Content-Disposition", "attachment; filename=scan_results.json")
-		json.NewEncoder(w).Encode(results)
+		if err := json.NewEncoder(w).Encode(results); err != nil {
+			log.Printf("Error encoding JSON: %v", err)
+			ws.sendError(w, "Failed to encode results", http.StatusInternalServerError)
+			return
+		}
 	case "csv":
 		w.Header().Set("Content-Type", "text/csv")
 		w.Header().Set("Content-Disposition", "attachment; filename=scan_results.csv")
@@ -483,7 +499,9 @@ func (ws *WebServer) sendToClient(conn *websocket.Conn, msgType string, data int
 		Type: msgType,
 		Data: data,
 	}
-	conn.WriteJSON(msg)
+	if err := conn.WriteJSON(msg); err != nil {
+		log.Printf("Error writing WebSocket message: %v", err)
+	}
 }
 
 func (ws *WebServer) broadcastToClients(msgType string, data interface{}) {
@@ -497,7 +515,9 @@ func (ws *WebServer) broadcastToClients(msgType string, data interface{}) {
 
 	for client := range ws.clients {
 		if err := client.WriteJSON(msg); err != nil {
-			client.Close()
+			if closeErr := client.Close(); closeErr != nil {
+				log.Printf("Error closing WebSocket connection: %v", closeErr)
+			}
 			delete(ws.clients, client)
 		}
 	}
@@ -505,19 +525,24 @@ func (ws *WebServer) broadcastToClients(msgType string, data interface{}) {
 
 func (ws *WebServer) sendSuccess(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(APIResponse{
+	if err := json.NewEncoder(w).Encode(APIResponse{
 		Success: true,
 		Data:    data,
-	})
+	}); err != nil {
+		log.Printf("Error encoding success response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+	}
 }
 
 func (ws *WebServer) sendError(w http.ResponseWriter, errMsg string, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(APIResponse{
+	if err := json.NewEncoder(w).Encode(APIResponse{
 		Success: false,
 		Error:   errMsg,
-	})
+	}); err != nil {
+		log.Printf("Error encoding error response: %v", err)
+	}
 }
 
 func (ws *WebServer) exportCSV(w http.ResponseWriter, results []ScanResult) {

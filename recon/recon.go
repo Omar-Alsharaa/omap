@@ -3,6 +3,7 @@ package recon
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/url"
 	"sort"
 	"strings"
@@ -233,7 +234,9 @@ func NewReconEngine(config ReconConfig) *ReconEngine {
 
 		// Load custom signatures if provided
 		if len(config.CustomSignatures) > 0 {
-			webTechDetector.LoadSignatures(config.CustomSignatures)
+			if err := webTechDetector.LoadSignatures(config.CustomSignatures); err != nil {
+				log.Printf("Warning: Failed to load custom signatures: %v", err)
+			}
 		}
 	}
 
@@ -256,7 +259,9 @@ func NewReconEngine(config ReconConfig) *ReconEngine {
 
 		// Load custom vulnerability signatures if provided
 		if len(config.VulnSignatures) > 0 {
-			vulnScanner.LoadVulnSignatures(config.VulnSignatures)
+			if err := vulnScanner.LoadVulnSignatures(config.VulnSignatures); err != nil {
+				log.Printf("Warning: Failed to load vulnerability signatures: %v", err)
+			}
 		}
 	}
 
@@ -610,7 +615,14 @@ func (re *ReconEngine) consolidateAssets(result *ReconResult) []AssetInfo {
 
 		// Extract port from URL
 		if parsedURL.Port() != "" {
-			fmt.Sscanf(parsedURL.Port(), "%d", &asset.Port)
+			if _, err := fmt.Sscanf(parsedURL.Port(), "%d", &asset.Port); err != nil {
+				// Default to standard ports on parse error
+				if asset.SSL {
+					asset.Port = 443
+				} else {
+					asset.Port = 80
+				}
+			}
 		} else {
 			if asset.SSL {
 				asset.Port = 443

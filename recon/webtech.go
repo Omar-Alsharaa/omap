@@ -166,6 +166,7 @@ func NewWebTechDetector(config WebTechConfig) *WebTechDetector {
 		Timeout: timeout,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
+				// #nosec G402 - InsecureSkipVerify is configurable via VerifySSL setting
 				InsecureSkipVerify: !config.VerifySSL,
 			},
 			MaxIdleConns:        100,
@@ -762,7 +763,9 @@ func (wtd *WebTechDetector) getCipherSuite(suite uint16) string {
 
 func (wtd *WebTechDetector) parseInt(s string) int {
 	var result int
-	fmt.Sscanf(s, "%d", &result)
+	if _, err := fmt.Sscanf(s, "%d", &result); err != nil {
+		return 0
+	}
 	return result
 }
 

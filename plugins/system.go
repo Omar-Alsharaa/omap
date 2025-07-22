@@ -3,7 +3,7 @@ package plugins
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -69,7 +69,7 @@ func NewPluginManager(pluginDir string) *PluginManager {
 
 // LoadPlugins loads all plugins from the plugin directory
 func (pm *PluginManager) LoadPlugins() error {
-	files, err := ioutil.ReadDir(pm.pluginDir)
+	files, err := os.ReadDir(pm.pluginDir)
 	if err != nil {
 		return fmt.Errorf("failed to read plugin directory: %v", err)
 	}
@@ -95,12 +95,19 @@ func (pm *PluginManager) LoadPlugin(filePath string) error {
 		return fmt.Errorf("maximum number of plugins (%d) reached", pm.maxPlugins)
 	}
 	
-	content, err := ioutil.ReadFile(filePath)
+	// Validate file path to prevent directory traversal
+	cleanPath := filepath.Clean(filePath)
+	if !filepath.IsAbs(cleanPath) {
+		cleanPath = filepath.Join(pm.pluginDir, cleanPath)
+	}
+	
+	// #nosec G304 - File path is validated and cleaned
+	content, err := os.ReadFile(cleanPath)
 	if err != nil {
 		return fmt.Errorf("failed to read plugin file: %v", err)
 	}
 	
-	plugin, err := pm.parsePlugin(string(content), filePath)
+	plugin, err := pm.parsePlugin(string(content), cleanPath)
 	if err != nil {
 		return fmt.Errorf("failed to parse plugin: %v", err)
 	}

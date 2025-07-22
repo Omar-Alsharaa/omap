@@ -25,8 +25,6 @@ import {
   Help,
   Brightness4,
   Brightness7,
-  NotificationsActive,
-  NotificationsOff,
   Download,
   Info,
   GitHub,

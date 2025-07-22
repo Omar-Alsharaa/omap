@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import ScanForm from './ScanForm';
 import { ScanProvider } from '../context/ScanContext';
 
@@ -12,11 +12,11 @@ test('renders scan form without crashing', () => {
 });
 
 test('scan form contains form elements', () => {
-  const { container } = render(
+  render(
     <ScanProvider>
       <ScanForm />
     </ScanProvider>
   );
   // Check that form elements are present
-  expect(container.querySelector('form')).toBeTruthy();
+  expect(screen.getByRole('textbox')).toBeInTheDocument();
 });

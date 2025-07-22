@@ -172,7 +172,9 @@ func (d *OSDetector) getTTL(host string) int {
 	
 	// Read response (simplified - would need proper ICMP parsing)
 	reply := make([]byte, 1500)
-	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	if err := conn.SetReadDeadline(time.Now().Add(d.timeout)); err != nil {
+		return 0
+	}
 	n, err := conn.Read(reply)
 	if err != nil || n < 20 {
 		return 0

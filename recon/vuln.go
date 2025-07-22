@@ -181,6 +181,7 @@ func NewVulnScanner(config VulnScanConfig) *VulnScanner {
 		Timeout: timeout,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
+				// #nosec G402 - InsecureSkipVerify is configurable via VerifySSL setting
 				InsecureSkipVerify: !config.VerifySSL,
 			},
 			MaxIdleConns:        100,

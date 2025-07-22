@@ -96,18 +96,25 @@ func (cli *ReconCLI) ParseReconFlags(args []string) error {
 		switch {
 		// General settings
 		case arg == "--recon-threads" && i+1 < len(args):
-			fmt.Sscanf(args[i+1], "%d", &cli.config.Threads)
+			if _, err := fmt.Sscanf(args[i+1], "%d", &cli.config.Threads); err != nil {
+				cli.config.Threads = 10 // default value
+			}
 			i++
 		case arg == "--recon-timeout" && i+1 < len(args):
 			var seconds int
-			fmt.Sscanf(args[i+1], "%d", &seconds)
+			if _, err := fmt.Sscanf(args[i+1], "%d", &seconds); err != nil {
+				seconds = 30 // default value
+			}
+			// #nosec G115 - Safe conversion of int to time.Duration
 			cli.config.Timeout = time.Duration(seconds) * time.Second
 			i++
 		case arg == "--recon-user-agent" && i+1 < len(args):
 			cli.config.UserAgent = args[i+1]
 			i++
 		case arg == "--recon-max-depth" && i+1 < len(args):
-			fmt.Sscanf(args[i+1], "%d", &cli.config.MaxDepth)
+			if _, err := fmt.Sscanf(args[i+1], "%d", &cli.config.MaxDepth); err != nil {
+				cli.config.MaxDepth = 3 // default value
+			}
 			i++
 		case arg == "--recon-no-redirects":
 			cli.config.FollowRedirects = false
@@ -152,7 +159,9 @@ func (cli *ReconCLI) ParseReconFlags(args []string) error {
 			cli.config.SubdomainSources = strings.Split(args[i+1], ",")
 			i++
 		case arg == "--recon-max-subdomains" && i+1 < len(args):
-			fmt.Sscanf(args[i+1], "%d", &cli.config.MaxSubdomains)
+			if _, err := fmt.Sscanf(args[i+1], "%d", &cli.config.MaxSubdomains); err != nil {
+				cli.config.MaxSubdomains = 100 // default value
+			}
 			i++
 
 		// DNS analysis
@@ -449,7 +458,7 @@ func (cli *ReconCLI) exportResults(result *ReconResult) error {
 	// Ensure output directory exists
 	outputDir := filepath.Dir(cli.config.OutputFile)
 	if outputDir != "." && outputDir != "" {
-		if err := os.MkdirAll(outputDir, 0755); err != nil {
+		if err := os.MkdirAll(outputDir, 0750); err != nil {
 			return fmt.Errorf("failed to create output directory: %v", err)
 		}
 	}

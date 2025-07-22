@@ -21,9 +21,7 @@ import {
   PlayArrow,
   Stop,
   ExpandMore,
-  Settings,
-  Security,
-  Extension
+  Settings
 } from '@mui/icons-material';
 import { useScan } from '../context/ScanContext';
 
