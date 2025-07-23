@@ -6,7 +6,7 @@ We take security seriously. If you discover a security vulnerability in OMAP, pl
 
 ### ⚠️ **DO NOT** create public GitHub issues for security vulnerabilities
 
-Instead, please email security findings to: [your-email@domain.com]
+Instead, please email security findings to: [omarmanhalalshare@gmail.com]
 
 ### What to Include
 
@@ -182,8 +182,7 @@ sudo -u omap-scanner ./omap
 ## 📞 Contact Information
 
 For security-related questions or concerns:
-- **Email**: [security@your-domain.com]
-- **PGP Key**: [Link to public key]
+- **Email**: [omarmanhalalshare@gmail.com]
 - **Response Time**: Within 48 hours
 
 ## 🔄 Policy Updates
