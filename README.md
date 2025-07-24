@@ -355,6 +355,7 @@ This project is licensed under the MIT License.
 ## ⚠️ Disclaimer
 
 This tool is for educational and authorized testing purposes only. Users are responsible for complying with applicable laws and regulations. Unauthorized scanning of networks you do not own or have permission to test is illegal.
+
 the code is been edit by me and ai.
 ---
 
