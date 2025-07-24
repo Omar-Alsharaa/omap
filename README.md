@@ -9,9 +9,9 @@
 
 OMAP is a modern, high-performance network scanner that implements **all 8 planned development phases**, providing advanced reconnaissance capabilities with a clean, extensible architecture.
 
-## 🚀 Features
+##  Features
 
-### 🎯 **Complete 8-Phase Implementation**
+###  **Complete 8-Phase Implementation**
 
 | Phase | Feature | Status |
 |-------|---------|--------|
@@ -24,43 +24,43 @@ OMAP is a modern, high-performance network scanner that implements **all 8 plann
 | **7** | Web GUI (React) | ✅ **Complete** |
 | **8** | Advanced Reconnaissance | ✅ **Complete** |
 
-### ⚡ **Performance & Scalability**
+###  **Performance & Scalability**
 - **High-speed scanning**: 1000+ concurrent connections
 - **Memory efficient**: Optimized for large-scale scans  
 - **Async engine**: Advanced goroutine management
 - **Rate limiting**: Configurable throttling for stealth
 
-### 🔍 **Advanced Detection**
+###  **Advanced Detection**
 - **OS Fingerprinting**: TTL analysis + banner detection
 - **Service Detection**: Regex-based signature matching
 - **Version Identification**: Confidence-scored results
 - **Multi-method approach**: Combines multiple detection techniques
 
-### 🌐 **Target Flexibility**
+###  **Target Flexibility**
 - **CIDR notation**: `192.168.1.0/24`
 - **IP ranges**: `192.168.1.1-192.168.1.10`
 - **Multiple targets**: Comma-separated lists
 - **Hostname resolution**: Automatic DNS lookup
 
-### 🔌 **Extensible Plugin System**
+###  **Extensible Plugin System**
 - **Lua scripting**: Full gopher-lua environment
 - **Rich API**: HTTP, TCP, regex, logging functions
 - **Auto-loading**: Automatic plugin discovery
 - **Examples included**: WordPress detection, SSH enumeration
 
-### 🌟 **Modern Web Interface**
+###  **Modern Web Interface**
 - **React frontend**: Material-UI components
 - **Real-time updates**: WebSocket communication
 - **Interactive results**: Sortable, filterable tables
 - **Export capabilities**: JSON, CSV, HTML formats
 
-### 🕵️ **Advanced Reconnaissance**
+###  **Advanced Reconnaissance**
 - **Subdomain enumeration**: Multiple source integration
 - **DNS analysis**: Comprehensive record inspection
 - **Web technology detection**: Framework identification
 - **Vulnerability scanning**: Security assessment integration
 
-## 📋 Development Phases
+##  Development Phases
 
 ### ✅ Phase 1: Foundation – Basic TCP Port Scanner (COMPLETED)
 **Goal**: Create a CLI-based TCP connect scanner (like nmap -sT)
@@ -133,7 +133,7 @@ OMAP is a modern, high-performance network scanner that implements **all 8 plann
 - ✅ DNS analysis and record inspection
 - ✅ Web technology detection and vulnerability scanning
 
-## 🛠️ Installation & Usage
+##  Installation & Usage
 
 ### Option 1: Automated Installation (Windows)
 ```powershell
@@ -230,7 +230,7 @@ omap <target> [start_port] [end_port] [workers]
 | `--oN` | | Output file | `` (stdout) |
 | `--help` | | Show help message | |
 
-## 🚀 Quick Start
+##  Quick Start
 
 1. **Build the project**:
    ```powershell
@@ -264,7 +264,7 @@ PORT    STATE   SERVICE         BANNER
 Open ports: 22, 80, 443
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Current Implementation (Phases 1-2)
 
@@ -317,7 +317,7 @@ Open ports: 22, 80, 443
               └─────────────────┘
 ```
 
-## 🔧 Technical Details
+##  Technical Details
 
 ### Performance Optimizations
 - **Concurrent Scanning**: Uses goroutines with semaphore-based worker pool
@@ -330,7 +330,7 @@ Open ports: 22, 80, 443
 - **Error Handling**: Graceful handling of network errors
 - **Timeout Protection**: Prevents hanging connections
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Please feel free to submit pull requests for any of the planned phases.
 
@@ -348,11 +348,11 @@ All phases have been successfully completed:
 
 **Future Enhancements**: Community-driven features, performance optimizations, and additional plugins.
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License.
 
-## ⚠️ Disclaimer
+##  Disclaimer
 
 This tool is for educational and authorized testing purposes only. Users are responsible for complying with applicable laws and regulations. Unauthorized scanning of networks you do not own or have permission to test is illegal.
 
