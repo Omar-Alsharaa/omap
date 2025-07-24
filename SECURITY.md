@@ -1,10 +1,10 @@
 # Security Policy
 
-## 🔒 Reporting Security Vulnerabilities
+## Reporting Security Vulnerabilities
 
 We take security seriously. If you discover a security vulnerability in OMAP, please report it responsibly.
 
-### ⚠️ **DO NOT** create public GitHub issues for security vulnerabilities
+### **DO NOT** create public GitHub issues for security vulnerabilities
 
 Instead, please email security findings to: [omarmanhalalshare@gmail.com]
 
@@ -26,7 +26,7 @@ When reporting security issues, please include:
 - **Status Updates**: Weekly until resolved
 - **Fix Timeline**: Varies by severity (see below)
 
-## 🚨 Severity Levels
+## Severity Levels
 
 ### Critical (24-48 hours)
 - Remote code execution
@@ -48,7 +48,7 @@ When reporting security issues, please include:
 - Minor configuration issues
 - Documentation security improvements
 
-## 🛡️ Security Best Practices for Users
+## Security Best Practices for Users
 
 ### General Usage
 - Run OMAP with minimal required privileges
@@ -74,7 +74,7 @@ When reporting security issues, please include:
 - Limit access to authorized users only
 - Keep web dependencies updated
 
-## 🔧 Security Features
+## Security Features
 
 ### Built-in Protections
 - Input validation on all user inputs
@@ -94,7 +94,7 @@ When reporting security issues, please include:
 - Error isolation between plugins
 - Resource monitoring and limits
 
-## 📋 Security Checklist for Developers
+## Security Checklist for Developers
 
 ### Code Review
 - [ ] Input validation implemented
@@ -118,7 +118,7 @@ When reporting security issues, please include:
 - [ ] Network access restricted
 - [ ] Logging and monitoring enabled
 
-## 🔍 Known Security Considerations
+## Known Security Considerations
 
 ### Network Scanning Risks
 - **Target Impact**: Aggressive scanning can cause service disruption
@@ -135,7 +135,7 @@ When reporting security issues, please include:
 - **Network Access**: Plugins have network access capabilities
 - **File System**: Plugins may access local files
 
-## 🛠️ Hardening Recommendations
+## Hardening Recommendations
 
 ### System Level
 ```bash
@@ -166,7 +166,7 @@ sudo -u omap-scanner ./omap
 - Monitor scanning traffic
 - Use intrusion detection systems
 
-## 📚 Security Resources
+## Security Resources
 
 ### External References
 - [OWASP Secure Coding Practices](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)
@@ -179,13 +179,13 @@ sudo -u omap-scanner ./omap
 - `govulncheck` - Go vulnerability database checker
 - `staticcheck` - Go static analysis
 
-## 📞 Contact Information
+## Contact Information
 
 For security-related questions or concerns:
 - **Email**: [omarmanhalalshare@gmail.com]
 - **Response Time**: Within 48 hours
 
-## 🔄 Policy Updates
+## Policy Updates
 
 This security policy may be updated periodically. Check back regularly for changes.
 
