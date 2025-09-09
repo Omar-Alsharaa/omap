@@ -178,8 +178,6 @@ export const ScanProvider = ({ children }) => {
 
   const startScan = async (scanConfig) => {
     try {
-      dispatch({ type: 'START_SCAN', payload: scanConfig });
-      
       // Start scan via HTTP API on the backend. The backend will broadcast progress via WebSocket.
       try {
         const res = await fetch('http://localhost:8080/api/scan', {
@@ -193,6 +191,9 @@ export const ScanProvider = ({ children }) => {
           const err = (body && body.error) || `HTTP ${res.status}`;
           throw new Error(err);
         }
+
+        // Only after server accepted the scan, mark UI as scanning
+        dispatch({ type: 'START_SCAN', payload: scanConfig });
         // server will broadcast scan id / progress via WebSocket
       } catch (err) {
         dispatch({ type: 'SET_ERROR', payload: err.message });
