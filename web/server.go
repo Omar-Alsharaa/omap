@@ -104,7 +104,8 @@ func NewWebServer(port int, staticDir string) *WebServer {
 			},
 		},
 		clients:     make(map[*websocket.Conn]bool),
-		scanner:     scanner.NewAsyncScanner(&scanner.ScanConfig{}),
+	// scanner is created per-scan so it's nil here; we'll instantiate it when a scan starts
+	scanner:     nil,
 		osDetector:  fingerprint.NewOSDetector(time.Second * 5),
 		svcDetector: fingerprint.NewServiceDetector(),
 		pluginMgr:   plugins.NewPluginManager("./plugins/examples"),
@@ -188,6 +189,18 @@ func (ws *WebServer) handleStartScan(w http.ResponseWriter, r *http.Request) {
 	}
 	ws.scanMux.Unlock()
 
+	// Create a scanner configured for this scan so workers/timeout/rateLimit are applied
+	ws.scanMux.Lock()
+	ws.scanner = scanner.NewAsyncScanner(&scanner.ScanConfig{
+		Timeout:       time.Duration(req.Timeout) * time.Second,
+		Workers:       req.Workers,
+		RateLimit:     time.Duration(req.RateLimit) * time.Millisecond,
+		Retries:       2,
+		BannerTimeout: 2 * time.Second,
+		ConnectOnly:   req.ConnectOnly,
+	})
+	ws.scanMux.Unlock()
+
 	// Start scan in goroutine
 	go ws.runScan(req)
 
@@ -196,16 +209,23 @@ func (ws *WebServer) handleStartScan(w http.ResponseWriter, r *http.Request) {
 
 func (ws *WebServer) handleStopScan(w http.ResponseWriter, r *http.Request) {
 	ws.scanMux.Lock()
-	defer ws.scanMux.Unlock()
-
 	if ws.activeScan == nil || ws.activeScan.Status != "running" {
+		ws.scanMux.Unlock()
 		ws.sendError(w, "No active scan to stop", http.StatusBadRequest)
 		return
 	}
 
+	// Mark scan cancelled and record end time
 	ws.activeScan.Status = "cancelled"
 	now := time.Now()
 	ws.activeScan.EndTime = &now
+
+	// Cancel the scanner context so blocking operations stop promptly
+	if ws.scanner != nil {
+		ws.scanner.Cancel()
+	}
+
+	ws.scanMux.Unlock()
 
 	ws.sendSuccess(w, map[string]string{"message": "Scan stopped"})
 }
@@ -385,6 +405,12 @@ func (ws *WebServer) runScan(req ScanRequest) {
 		}
 	}
 
+	// Broadcast initial progress state
+	ws.broadcastToClients("scan_progress", map[string]interface{}{
+		"progress": ws.activeScan.Progress,
+		"stats":    ws.activeScan.Stats,
+	})
+
 	// Scan each target
 	for i, target := range targets {
 		ws.scanMux.RLock()
@@ -395,7 +421,13 @@ func (ws *WebServer) runScan(req ScanRequest) {
 		ws.scanMux.RUnlock()
 
 		// Scan ports for this target
-		results := ws.scanner.ScanPorts(target.IP.String(), ports)
+		// use current scanner (may have been cancelled)
+		var results []scanner.ScanResult
+		if ws.scanner != nil {
+			results = ws.scanner.ScanPorts(target.IP.String(), ports)
+		} else {
+			results = make([]scanner.ScanResult, 0)
+		}
 
 		for _, result := range results {
 			ws.scanMux.RLock()
@@ -405,10 +437,15 @@ func (ws *WebServer) runScan(req ScanRequest) {
 			}
 			ws.scanMux.RUnlock()
 
+			status := "closed"
+			if result.Open {
+				status = "open"
+			}
+
 			scanResult := ScanResult{
 				Host:      result.Host,
 				Port:      result.Port,
-				Status:    result.Status,
+				Status:    status,
 				Service:   result.Service,
 				Version:   result.Version,
 				Banner:    result.Banner,
@@ -466,6 +503,12 @@ func (ws *WebServer) runScan(req ScanRequest) {
 		ws.scanMux.Lock()
 		ws.activeScan.Stats.ScannedHosts = i + 1
 		ws.scanMux.Unlock()
+
+		// periodic heartbeat so UI shows activity even if ports are slow
+		ws.broadcastToClients("scan_progress", map[string]interface{}{
+			"progress": ws.activeScan.Progress,
+			"stats":    ws.activeScan.Stats,
+		})
 	}
 }
 
