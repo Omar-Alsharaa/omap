@@ -363,6 +363,7 @@ func (ws *WebServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ws *WebServer) runScan(req ScanRequest) {
+	log.Printf("runScan: starting scan id=%s targets=%s ports=%s workers=%d", ws.activeScan.ID, req.Targets, req.Ports, req.Workers)
 	defer func() {
 		ws.scanMux.Lock()
 		if ws.activeScan.Status == "running" {
@@ -413,8 +414,10 @@ func (ws *WebServer) runScan(req ScanRequest) {
 
 	// Scan each target
 	for i, target := range targets {
+		log.Printf("runScan: scanning target %s (%d/%d)", target.IP.String(), i+1, len(targets))
 		ws.scanMux.RLock()
 		if ws.activeScan.Status != "running" {
+			log.Printf("runScan: aborting, status=%s", ws.activeScan.Status)
 			ws.scanMux.RUnlock()
 			break
 		}
@@ -499,7 +502,7 @@ func (ws *WebServer) runScan(req ScanRequest) {
 			})
 		}
 
-		// Update host progress
+	// Update host progress
 		ws.scanMux.Lock()
 		ws.activeScan.Stats.ScannedHosts = i + 1
 		ws.scanMux.Unlock()
@@ -509,6 +512,7 @@ func (ws *WebServer) runScan(req ScanRequest) {
 			"progress": ws.activeScan.Progress,
 			"stats":    ws.activeScan.Stats,
 		})
+	log.Printf("runScan: target %s done scannedPorts=%d openPorts=%d progress=%.2f", target.IP.String(), ws.activeScan.Stats.ScannedPorts, ws.activeScan.Stats.OpenPorts, ws.activeScan.Progress)
 	}
 }
 
