@@ -85,7 +85,7 @@ OMAP is a modern, high-performance network scanner that implements **all 8 plann
 ### Command Line Options
 ```bash
 # Modern syntax (recommended)
-omap -t <targets> [options]
+./omap.exe -t <targets> [options]
 
 # Legacy syntax (backward compatibility)
 omap <target> [start_port] [end_port] [workers]
@@ -124,6 +124,38 @@ omap <target> [start_port] [end_port] [workers]
 ```
 
 ### Advanced Options
+
+## 🖥️ Web UI (Local Development)
+
+The project includes a React-based web interface in the `web/` directory. The web UI interacts with a Go-based web server that exposes a WebSocket endpoint at `/ws` and HTTP API routes under `/api`.
+
+Quick local steps (recommended):
+
+1. Build the frontend assets and the web server:
+
+```powershell
+cd web
+npm install
+npm run build   # generates web/build
+cd ..
+go build -o webserver.exe ./web/server.go
+```
+
+2. Run the web server (serves the static build and provides WebSocket/API):
+
+```powershell
+.\webserver.exe
+# Server listens on port 8080 by default. Open http://localhost:8080
+```
+
+3. Notes:
+- The frontend expects the backend WebSocket at `ws://localhost:8080/ws` and will POST to `http://localhost:8080/api/scan` to start scans.
+- If you prefer development mode while iterating on React, run `npm start` in `web/` (default port 3000). When using the dev server, run the Go webserver as well so the WebSocket/API are available at port 8080.
+
+4. Troubleshooting:
+- If the UI shows "WebSocket connection not available" or `ERR_CONNECTION_REFUSED`, ensure the Go webserver is running and reachable at `localhost:8080`.
+- If you change ports, update the client or run the webserver with a different port argument: `.\webserver.exe 9090` (to listen on 9090).
+
 ```bash
 # Custom timeout and rate limiting
 .\omap.exe -t 192.168.1.1 -p 1-1000 --timeout 5s --rate-limit 100ms

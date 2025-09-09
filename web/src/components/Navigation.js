@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import {
   Dashboard,
-  Scanner,
+  Search,
   Assessment,
   History,
   Settings,
@@ -50,7 +50,7 @@ const Navigation = ({ darkMode, onToggleDarkMode }) => {
     {
       label: 'New Scan',
       path: '/scan',
-      icon: <Scanner />
+      icon: <Search />
     },
     {
       label: 'Results',
@@ -107,7 +107,7 @@ const Navigation = ({ darkMode, onToggleDarkMode }) => {
       <Toolbar>
         {/* Logo and Title */}
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
-          <Scanner sx={{ mr: 1, fontSize: 28 }} />
+          <Search sx={{ mr: 1, fontSize: 28 }} />
           <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
             OMAP
           </Typography>
@@ -135,7 +135,7 @@ const Navigation = ({ darkMode, onToggleDarkMode }) => {
           <Box sx={{ mr: 2 }}>
             <Badge color="secondary" variant="dot">
               <Tooltip title="Scan in progress">
-                <Scanner sx={{ animation: 'pulse 2s infinite' }} />
+                <Search sx={{ animation: 'pulse 2s infinite' }} />
               </Tooltip>
             </Badge>
           </Box>

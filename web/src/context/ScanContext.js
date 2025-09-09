@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import io from 'socket.io-client';
+// Using native WebSocket to match backend implementation at /ws
 
 const ScanContext = createContext();
 
@@ -105,33 +105,52 @@ export const ScanProvider = ({ children }) => {
   const [state, dispatch] = useReducer(scanReducer, initialState);
 
   useEffect(() => {
-    // Initialize WebSocket connection
-    const socket = io('http://localhost:8080', {
-      transports: ['websocket', 'polling']
-    });
+    // Initialize native WebSocket connection to backend (gorilla/websocket at /ws)
+    const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsUrl = `${wsProto}://localhost:8080/ws`;
+    const socket = new WebSocket(wsUrl);
 
-    socket.on('connect', () => {
-      console.log('Connected to OMAP server');
+    socket.addEventListener('open', () => {
+      console.log('Connected to OMAP server (native WebSocket)');
       dispatch({ type: 'SET_SOCKET', payload: socket });
     });
 
-    socket.on('scan_progress', (data) => {
-      dispatch({ type: 'UPDATE_PROGRESS', payload: data });
+    socket.addEventListener('message', (evt) => {
+      try {
+        const msg = JSON.parse(evt.data);
+        // Backend sends objects like: {"type":"scan_progress","data":{...}}
+        const type = msg.type || msg.Type || msg.Type?.toLowerCase();
+        const data = msg.data || msg.Data || msg.data;
+
+        switch ((type || '').toString().toLowerCase()) {
+          case 'scan_progress':
+            dispatch({ type: 'UPDATE_PROGRESS', payload: data });
+            break;
+          case 'scan_result':
+            dispatch({ type: 'ADD_RESULT', payload: data });
+            break;
+          case 'scan_complete':
+            dispatch({ type: 'COMPLETE_SCAN', payload: data });
+            break;
+          case 'scan_error':
+            dispatch({ type: 'SET_ERROR', payload: data.error || data });
+            break;
+          case 'scan_status':
+            // initial status message from server
+            if (data && data.status === 'running') {
+              dispatch({ type: 'START_SCAN', payload: data });
+            }
+            break;
+          default:
+            // ignore unknown messages
+            break;
+        }
+      } catch (e) {
+        console.error('Failed to parse WS message', e, evt.data);
+      }
     });
 
-    socket.on('scan_result', (data) => {
-      dispatch({ type: 'ADD_RESULT', payload: data });
-    });
-
-    socket.on('scan_complete', (data) => {
-      dispatch({ type: 'COMPLETE_SCAN', payload: data });
-    });
-
-    socket.on('scan_error', (error) => {
-      dispatch({ type: 'SET_ERROR', payload: error.message });
-    });
-
-    socket.on('disconnect', () => {
+    socket.addEventListener('close', () => {
       console.log('Disconnected from OMAP server');
     });
 
@@ -142,7 +161,11 @@ export const ScanProvider = ({ children }) => {
     }
 
     return () => {
-      socket.disconnect();
+      try {
+        socket.close();
+      } catch (e) {
+        // ignore
+      }
     };
   }, []);
 
@@ -157,10 +180,22 @@ export const ScanProvider = ({ children }) => {
     try {
       dispatch({ type: 'START_SCAN', payload: scanConfig });
       
-      if (state.socket) {
-        state.socket.emit('start_scan', scanConfig);
-      } else {
-        throw new Error('WebSocket connection not available');
+      // Start scan via HTTP API on the backend. The backend will broadcast progress via WebSocket.
+      try {
+        const res = await fetch('http://localhost:8080/api/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(scanConfig)
+        });
+
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok || (body && body.success === false)) {
+          const err = (body && body.error) || `HTTP ${res.status}`;
+          throw new Error(err);
+        }
+        // server will broadcast scan id / progress via WebSocket
+      } catch (err) {
+        dispatch({ type: 'SET_ERROR', payload: err.message });
       }
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -168,9 +203,14 @@ export const ScanProvider = ({ children }) => {
   };
 
   const stopScan = () => {
-    if (state.socket) {
-      state.socket.emit('stop_scan');
-    }
+    // Stop via HTTP API; backend will broadcast status via WebSocket
+    (async () => {
+      try {
+        await fetch('http://localhost:8080/api/scan/stop', { method: 'POST' });
+      } catch (e) {
+        console.warn('Failed to POST stop scan', e);
+      }
+    })();
     dispatch({ type: 'STOP_SCAN' });
   };
 

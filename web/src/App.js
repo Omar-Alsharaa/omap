@@ -11,7 +11,7 @@ import {
   createTheme,
   CssBaseline
 } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import ScanForm from './components/ScanForm';
 import ScanResults from './components/ScanResults';
 import ScanProgress from './components/ScanProgress';
@@ -91,8 +91,6 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <ScanProvider>
-        <Router>
           <Box sx={{ flexGrow: 1, minHeight: '100vh', backgroundColor: '#0a0a0a' }}>
             <AppBar position="static" sx={{ backgroundColor: '#000000', borderBottom: '2px solid #00ff41' }}>
               <Toolbar>
@@ -164,9 +162,7 @@ function App() {
                 OMAP Web Interface © 2024 | Advanced Network Reconnaissance Tool
               </Typography>
             </Box>
-          </Box>
-        </Router>
-      </ScanProvider>
+      </Box>
     </ThemeProvider>
   );
 }
