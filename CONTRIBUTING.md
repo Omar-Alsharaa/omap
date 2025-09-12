@@ -27,7 +27,7 @@ Thank you for your interest in contributing to OMAP! This document provides guid
 8. Push to the branch (`git push origin feature/amazing-feature`)
 9. Open a Pull Request
 
-## 🔧 Development Setup
+## Development Setup
 
 ### Prerequisites
 - Go 1.19 or later
