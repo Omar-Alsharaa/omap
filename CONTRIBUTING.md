@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to OMAP! This document provides guidelines for contributing to the project.
 
-## 🤝 How to Contribute
+## How to Contribute
 
 ### Reporting Issues
 - Use the GitHub issue tracker to report bugs
@@ -68,7 +68,7 @@ go test -race ./...
 go test -bench=. ./...
 ```
 
-## 📝 Code Style
+## Code Style
 
 ### Go Code
 - Follow standard Go conventions (`go fmt`, `go vet`)
@@ -89,7 +89,7 @@ go test -bench=. ./...
 - Update API documentation
 - Include usage examples
 
-## 🎯 Development Guidelines
+##  Development Guidelines
 
 ### Architecture
 - Maintain modular design
@@ -115,7 +115,7 @@ go test -bench=. ./...
 - Add proper logging and debugging
 - Test plugins thoroughly
 
-## 📦 Module Structure
+## Module Structure
 
 ```
 omap/
@@ -128,7 +128,7 @@ omap/
 └── docs/            # Documentation
 ```
 
-## 🧪 Testing Guidelines
+## Testing Guidelines
 
 ### Unit Tests
 - Test public interfaces
@@ -148,7 +148,7 @@ omap/
 - Test with various inputs
 - Include security tests
 
-## 🚀 Release Process
+## Release Process
 
 1. Update version numbers
 2. Update CHANGELOG.md
@@ -157,7 +157,7 @@ omap/
 5. Update documentation
 6. Announce the release
 
-## 📋 Issue Labels
+## Issue Labels
 
 - `bug`: Something isn't working
 - `enhancement`: New feature or request
@@ -167,7 +167,7 @@ omap/
 - `performance`: Performance improvements
 - `security`: Security-related issues
 
-## 💡 Ideas for Contributions
+## Ideas for Contributions
 
 ### Beginner-Friendly
 - Add new service signatures
@@ -187,14 +187,14 @@ omap/
 - Add advanced evasion techniques
 - Implement ML-based detection
 
-## 📞 Getting Help
+## Getting Help
 
 - Check the documentation first
 - Search existing issues
 - Join our Discord/Slack (if available)
 - Ask questions in GitHub Discussions
 
-## 🙏 Recognition
+## Recognition
 
 Contributors will be recognized in:
 - README.md contributor section
